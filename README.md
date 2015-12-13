@@ -1,6 +1,6 @@
 # Introduction
 
-Trigger an rsync update at the end of a TortoiseSVN get or a git checkout, provide a basic TkInter GUI for feedback.
+Trigger an rsync update at the end of a TortoiseSVN update or a git checkout, provide a basic TkInter GUI for feedback.
 
 This demonstrates how to configure a post-update client side hook for TortoiseSVN to execute a script of your choice (https://tortoisesvn.net/docs/release/TortoiseSVN_en/tsvn-dug-settings.html#tsvn-dug-settings-hooks). It can also be used with git hooks (https://git-scm.com/docs/githooks).
 
@@ -31,13 +31,15 @@ test (postup.ExecutorTest) ... ok
 
 # Standalone packaging
 
-Produce a standalone .exe using pyinstaller (http://www.pyinstaller.org/):
+Produce a standalone EXE using pyinstaller (http://www.pyinstaller.org/):
 
 ```
 pyinstaller.exe --windowed -y postup.py
 ```
 
 # Configuration
+
+Make sure you download an rsync binary (see above)!
 
 Edit the source and change the RSYNC_* variables to suit your needs.
 
@@ -48,4 +50,4 @@ Similar configuration for Git is left as an exercise to the reader.
 
 # Demo mode
 
-If an rsync binary is not provided or misconfigured, the script will run in demo mode and simply ping google for a bit.
+If an rsync binary is not provided or is misconfigured, the script will run in demo mode and simply ping google for a bit.

@@ -270,11 +270,15 @@ if ( __name__ == '__main__' ):
             logging.info( 'Detected forked execution, continuing.' )
     
     # write out the password to a file for rsync
-    file( RSYNC_PASSWORD_FILE, 'wb' ).write( RSYNC_PASS )
-    cmd = [ RSYNC_BIN_PATH, '--password-file=%s' % RSYNC_PASSWORD_FILE, '-a', '--verbose' ]
-    #cmd.append( '--delete' )
-    cmd += [ RSYNC_URL, '.' ]
-    logging.info( 'Command: %s' % pprint.pformat( cmd ) )
+    if ( not os.path.exists( RSYNC_BIN_PATH ) ):
+        logging.info( 'RSYNC NOT FOUND - DEMO MODE' )
+        cmd = [ r'ping.exe', 'google.com' ]
+    else:
+        file( RSYNC_PASSWORD_FILE, 'wb' ).write( RSYNC_PASS )
+        cmd = [ RSYNC_BIN_PATH, '--password-file=%s' % RSYNC_PASSWORD_FILE, '-a', '--verbose' ]
+        #cmd.append( '--delete' )
+        cmd += [ RSYNC_URL, '.' ]
+        logging.info( 'Command: %s' % pprint.pformat( cmd ) )
 
     # prepare the UI object
     root = tk.Tk()

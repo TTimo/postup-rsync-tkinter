@@ -6,6 +6,8 @@ This demonstrates how to configure a post-update client side hook for TortoiseSV
 
 I use this to synchronize large binary data that does not change often and lives outside of the repository. During implementation there were a number of small gotchas regarding spawning and monitoring of an external process, and providing a basic GUI for feedback so I'm releasing this as a reference.
 
+![Screenshot](screenshot.png "Screenshot")
+
 # Installation
 
 The script should be packaged as a standalone with pyinstaller so it can be executed without needing any dependencies installed on the client system. No python or MSVC runtime needed for the end user, see the pyinstaller section below.
@@ -40,7 +42,7 @@ pyinstaller.exe --windowed -y postup.py
 Edit the source and change the RSYNC_* variables to suit your needs.
 
 Configure a post commit in TortoiseSVN:
-![TortoiseSVN post update property](tortoisesvn-postup.png "Title")
+![TortoiseSVN post update property](tortoisesvn-postup.png "tsvnprop")
 
 Similar configuration for Git is left as an exercise to the reader.
 

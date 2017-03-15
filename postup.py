@@ -76,19 +76,7 @@ class LoggingExecutor( threading.Thread ):
     def run( self ):
         success = False
         try:
-            #raise Exception( 'boo' )
-            # NOTE: shell = True makes the rsync.exe DOS box not show, no use otherwise
-            self.p = subprocess.Popen( self.cmd, stdout = subprocess.PIPE, bufsize = 1, shell = True )
-            for line in iter( self.p.stdout.readline, b'' ):
-                logging.info( line.strip('\n') )
-                if ( self.do_terminate ):
-                    # NOTE: Does not work well with slow output since we wait on a printed line.
-                    # Will break completely on a silent process.
-                    # Would need some kind of timeout cycle to improve on this.
-                    self.p.terminate()
-                    break
-            self.p.stdout.close()
-            ret = self.p.wait()
+            ret = self.task()
             success = ( ret == 0 )
         except Exception as e:
             logging.info( 'Exception:' )
@@ -96,6 +84,26 @@ class LoggingExecutor( threading.Thread ):
             success = False
         finally:
             self.signal_done.emit( success = success )
+
+    def task( self ):
+        # Test
+        #raise Exception( 'boo' )
+        # NOTE: shell = True makes the rsync.exe DOS box not show, no use otherwise
+        self.p = subprocess.Popen( self.cmd, stdout = subprocess.PIPE, bufsize = 1, shell = True )
+        for line in iter( self.p.stdout.readline, b'' ):
+            logging.info( line.strip('\n') )
+            if ( self.do_terminate ):
+                # NOTE: Does not work well with slow output since we wait on a printed line.
+                # Will break completely on a silent process.
+                # Would need some kind of timeout cycle to improve on this.
+                # TODO: Doesn't actually work, I see active rsync.exe processes after this.
+                logging.info( 'Issuing terminate to rsync process.' )
+                self.p.terminate()
+                break
+        self.p.stdout.close()
+        ret = self.p.wait()
+        logging.info( 'Rsync process return code %s' % ret )
+        return ret
 
     def terminate( self ):
         # Issuing terminate from a different thread does not work reliably (or at all)
@@ -180,9 +188,9 @@ class ProgressUI( object ):
     def _onDone( self, success ):
         self._addText( 'Done!' )
         if ( success ):
-            self.button['text'] = 'Close'
+            self.button['text'] = 'SUCCESS - Close'
         else:
-            self.button['text'] = 'FAILED'
+            self.button['text'] = 'FAILED - Close'
             self.button['foreground'] = 'red'
         if ( success and self.autoclose_var.get() == 1 ):
             self.parent.quit()
@@ -302,9 +310,12 @@ if ( __name__ == '__main__' ):
 
     # kill rsync if still running (user abort)
     while ( e.is_alive() ):
-        logging.info( 'terminate process' )
+        logging.info( 'Notify termination on the executor.' )
         e.terminate()
         time.sleep( 1 )
 
     # cleanup
     os.unlink( RSYNC_PASSWORD_FILE )
+
+    # will flush the logs
+    logging.shutdown()
